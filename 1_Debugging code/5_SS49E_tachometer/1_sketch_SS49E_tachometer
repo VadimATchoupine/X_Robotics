@@ -1,0 +1,32 @@
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <stdlib.h>
+#include "hd44780.h"
+#define TIMER_OFF 0b00000000
+#define TIMER_ON  0b00000101
+#define TIMER_TO_TACH (60UL * 10000000UL / 512UL)
+int main(void){
+unsigned int tachTimer;
+unsigned long tachometer;
+char tempStr[10];
+hd44780_init(&PORTD, PORTD7, &PORTB, PORTB1, &PORTB, PORTB0, 2, 20);
+DDRD &= ~_BV(PORTD2);
+EICRA |= _BV(ISC01);
+TCCR1A = 0b00000000;
+TCCR1B = TIMER_OFF;
+TCNT1 = 0;
+while(1) {
+while((EIFR & _BV(INTF0)) == 0);
+TCCR1B = TIMER_ON;
+GTCCR |= _BV(PSRSYNC);
+EIFR = _BV(INTF0);
+while((EIFR & _BV(INTF0)) == 0);
+TCCR1B = TIMER_OFF;
+tachTimer = TCNT1;
+TCNT1 = 0;
+tachometer = TIMER_TO_TACH / (unsigned long)tachTimer;
+ltoa(tachometer, tempStr, 10);
+hd44780_clearLine(0);
+hd44780_putstr(tempStr);
+EIFR = _BV(INTF0);
+}}

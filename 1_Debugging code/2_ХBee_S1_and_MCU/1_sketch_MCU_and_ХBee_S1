@@ -1,0 +1,39 @@
+int ledPin = 13;
+int transistorPin = 12;
+
+void setup(){
+pinMode(ledPin, OUTPUT);
+pinMode(transistorPin, OUTPUT);
+blinkLED(ledPin, 2, 500);
+delay(1000);
+Serial.begin(19200);
+}
+
+void loop() {
+blinkLED(ledPin, 1, 250);
+if (Serial.available() > 0) {
+char inByte = Serial.read();
+if (inByte == '*') {
+int len = 5;
+char inString[len];
+for (int i = 0; i < len; i++) {
+inString[i] = Serial.read();
+}
+if ( strstr(inString, "reset") != NULL )
+resetChip(5000);
+}}}		  
+void resetChip(int delayTime) {
+Serial.print("\nArduino will reset in ");
+Serial.print(delayTime/1000, DEC);
+Serial.print(" seconds...\n\r");
+blinkLED(ledPin, delayTime/100, 100);
+Serial.print("\nResetting NOW.\n\r");
+digitalWrite(transistorPin, HIGH);
+}
+void blinkLED(int targetPin, int numBlinks, int blinkRate) {
+for (int i=0; i<numBlinks; i++) {
+digitalWrite(targetPin, HIGH);
+delay(blinkRate);
+digitalWrite(targetPin, LOW);
+delay(blinkRate);
+}}

@@ -1,0 +1,25 @@
+#include "DFRobotVeyronBrushed.h"
+DFRobotVeyronBrushed VeyronBrushed;
+
+void setup() {
+Serial1.begin(57600);
+VeyronBrushed.begin(Serial1);
+}
+
+void loop() {
+int id = 1;
+int motorNumber = 1;
+int speed;
+speed=80;
+VeyronBrushed.setSpeed(id, motorNumber, speed);
+delay(2000);
+speed=0;
+VeyronBrushed.setSpeed(id, motorNumber, speed);
+delay(2000);
+speed=-80;
+VeyronBrushed.setSpeed(id, motorNumber, speed);
+delay(2000);
+speed=0;
+VeyronBrushed.setSpeed(id, motorNumber, speed);
+delay(2000);
+}
